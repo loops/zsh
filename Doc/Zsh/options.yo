@@ -1265,6 +1265,25 @@ item(tt(MAIL_WARNING) (tt(-U)))(
 Print a warning message if a mail file has been
 accessed since the shell last checked.
 )
+pindex(PASS_COMMENTS)
+pindex(NO_PASS_COMMENTS)
+pindex(PASSCOMMENTS)
+pindex(NOPASSCOMMENTS)
+cindex(comments, passing as argument)
+item(tt(PASS_COMMENTS))(
+Comments made interactively, starting with a hash character and extending
+to the end of the line, are passed as an argument.  The hash character
+itself and one trailing space if it exists, are stripped before passing
+everything else along as a single argument.
+
+This operates as a sort of super quoting mechanism, where all quotes,
+semi-colons, and other special punctuation will be ignored by Zsh and
+instead passed along as a single string.
+
+This can be used to easily pass one-line programs to other interpreters.
+Creation of an alias can make this even easier. For example the alias given
+as "alias p6='perl6 -e #'", is used as: p6 say "hello world's"; my $a; say !$a
+)
 pindex(PATH_DIRS)
 pindex(NO_PATH_DIRS)
 pindex(PATHDIRS)

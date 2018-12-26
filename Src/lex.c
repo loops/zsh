@@ -605,6 +605,9 @@ gettok(void)
     int c, d;
     int peekfd = -1;
     enum lextok peek;
+    int pass = isset(PASSCOMMENTS) && interact && isset(SHINSTDIN)
+		 && !incompfunc && !lexflags && !zleactive;
+    int firstpass = pass;
 
   beginning:
     tokstr = NULL;
@@ -664,32 +667,41 @@ gettok(void)
      * is not normal command input: lexflags implies we are examining
      * a line lexically without it being used for normal command input.
      */
-    if (c == hashchar && !nocomments &&
+    if (c == hashchar && ( pass || (!nocomments &&
 	(isset(INTERACTIVECOMMENTS) ||
 	 ((!lexflags || (lexflags & LEXFLAGS_COMMENTS)) && !expanding &&
-	  (!interact || unset(SHINSTDIN) || strin)))) {
+	  (!interact || unset(SHINSTDIN) || strin)))))) {
 	/* History is handled here to prevent extra  *
 	 * newlines being inserted into the history. */
 
-	if (lexflags & LEXFLAGS_COMMENTS_KEEP) {
+	if ((lexflags & LEXFLAGS_COMMENTS_KEEP) || pass) {
 	    lexbuf.len = 0;
 	    lexbuf.ptr = tokstr =
 		(char *)hcalloc(lexbuf.siz = LEX_HEAP_SIZE);
-	    add(c);
+	    if (!pass)
+		add(c);
 	}
 	hwabort();
 	while ((c = ingetc()) != '\n' && !lexstop) {
 	    hwaddc(c);
+	    if (firstpass) {
+		firstpass=0;
+		if (c == ' ')
+		    continue;
+	    }
 	    addtoline(c);
-	    if (lexflags & LEXFLAGS_COMMENTS_KEEP)
+	    if ((lexflags & LEXFLAGS_COMMENTS_KEEP) || pass)
 		add(c);
 	}
 
 	if (errflag)
 	    peek = LEXERR;
 	else {
-	    if (lexflags & LEXFLAGS_COMMENTS_KEEP) {
+	    if ((lexflags & LEXFLAGS_COMMENTS_KEEP) || pass) {
 		*lexbuf.ptr = '\0';
+		// FIXME :  History insists on deleting final char
+		if (pass)
+		    hwaddc('x'); // so supply sacrificial char
 		if (!lexstop)
 		    hungetc(c);
 		peek = STRING;

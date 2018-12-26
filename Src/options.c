@@ -209,6 +209,7 @@ static struct optname optns[] = {
 {{NULL, "numericglobsort",    OPT_EMULATE},		 NUMERICGLOBSORT},
 {{NULL, "octalzeroes",        OPT_EMULATE|OPT_SH},	 OCTALZEROES},
 {{NULL, "overstrike",	      0},			 OVERSTRIKE},
+{{NULL, "passcomments",       0},			 PASSCOMMENTS},
 {{NULL, "pathdirs",	      OPT_EMULATE},		 PATHDIRS},
 {{NULL, "pathscript",	      OPT_EMULATE|OPT_BOURNE},	 PATHSCRIPT},
 {{NULL, "pipefail",           OPT_EMULATE},              PIPEFAIL},
